@@ -340,15 +340,17 @@ class RandomSizedCrop(object):
         interpolation: Default: PIL.Image.BILINEAR
     """
 
-    def __init__(self, size, interpolation=Image.BILINEAR):
+    def __init__(self, size, interpolation=Image.BILINEAR, area=(0.08,1.0), aspect_ratio=(3./4, 4./3)):
         self.size = size
         self.interpolation = interpolation
+        self.area = area
+        self.aspect_ratio = aspect_ratio
 
     def __call__(self, img):
         for attempt in range(10):
             area = img.size[0] * img.size[1]
-            target_area = random.uniform(0.08, 1.0) * area
-            aspect_ratio = random.uniform(3. / 4, 4. / 3)
+            target_area = random.uniform(*self.area) * area
+            aspect_ratio = random.uniform(*self.aspect_ratio)
 
             w = int(round(math.sqrt(target_area * aspect_ratio)))
             h = int(round(math.sqrt(target_area / aspect_ratio)))
