@@ -196,7 +196,7 @@ class CIFAR10Z(CIFAR10):
         img_3 = img_1.copy()
 
         if self.transform is not None:
-            for t1, t2, t3 in izip(*self.transforms):
+            for t1, t2, t3 in izip(*self.transform):
                 if t1.__class__.__name__ == 'RandomCropZ':
                     img_1, crop_pos = t1(img_1)
                     img_2, _ = t2(img_2, crop_pos)
