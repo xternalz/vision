@@ -172,3 +172,58 @@ class CIFAR100(CIFAR10):
     test_list = [
         ['test', 'f0ef6b0ae62326f3e7ffdfab6717acfc'],
     ]
+
+
+class CIFAR10Z(CIFAR10):
+    def __getitem__(self, index):
+        """
+        Args:
+            index (int): Index
+
+        Returns:
+            tuple: (image, target) where target is index of the target class.
+        """
+        if self.train:
+            img, target = self.train_data[index], self.train_labels[index]
+        else:
+            img, target = self.test_data[index], self.test_labels[index]
+
+        # doing this so that it is consistent with all other datasets
+        # to return a PIL Image
+        img_1 = Image.fromarray(img)
+        img_2 = img_1.copy()
+        img_3 = img_1.copy()
+
+        if self.transform is not None:
+            for t1, t2, t3 in izip(*self.transforms):
+                if t1.__class__.__name__ == 'RandomCropZ':
+                    img_1, crop_pos = t1(img_1)
+                    img_2, _ = t2(img_2, crop_pos)
+                    img_3, _ = t3(img_3, crop_pos)
+                elif t1.__class__.__name__ == 'RandomHorizontalFlipZ':
+                    img_1, flip_or_not = t1(img_1)
+                    img_2, _ = t2(img_2, flip_or_not)
+                    img_3, _ = t3(img_3, flip_or_not)
+                else:
+                    img_1 = t1(img_1)
+                    img_2 = t2(img_2)
+                    img_3 = t3(img_3)
+
+        if self.target_transform is not None:
+            target = self.target_transform(target)
+
+        return img_1, img_2, img_3, target
+
+
+class CIFAR100Z(CIFAR10Z):
+    base_folder = 'cifar-100-python'
+    url = "http://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz"
+    filename = "cifar-100-python.tar.gz"
+    tgz_md5 = 'eb9058c3a382ffc7106e4002c42a8d85'
+    train_list = [
+        ['train', '16019d7e3df5f24257cddd939b257f8d'],
+    ]
+
+    test_list = [
+        ['test', 'f0ef6b0ae62326f3e7ffdfab6717acfc'],
+    ]

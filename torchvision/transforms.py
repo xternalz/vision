@@ -311,6 +311,51 @@ class RandomCrop(object):
         return img.crop((x1, y1, x1 + tw, y1 + th))
 
 
+class RandomCropZ(object):
+    """Crop the given PIL.Image at a random location.
+
+    Args:
+        size (sequence or int): Desired output size of the crop. If size is an
+            int instead of sequence like (w, h), a square crop (size, size) is
+            made.
+        padding (int or sequence, optional): Optional padding on each border
+            of the image. Default is 0, i.e no padding. If a sequence of length
+            4 is provided, it is used to pad left, top, right, bottom borders
+            respectively.
+    """
+
+    def __init__(self, size, padding=0):
+        if isinstance(size, numbers.Number):
+            self.size = (int(size), int(size))
+        else:
+            self.size = size
+        self.padding = padding
+
+    def __call__(self, img, loc=None):
+        """
+        Args:
+            img (PIL.Image): Image to be cropped.
+
+        Returns:
+            PIL.Image: Cropped image.
+        """
+        if self.padding > 0:
+            img = ImageOps.expand(img, border=self.padding, fill=0)
+
+        if loc is None:
+            w, h = img.size
+            th, tw = self.size
+            if w == tw and h == th:
+                return img
+
+            x1 = random.randint(0, w - tw)
+            y1 = random.randint(0, h - th)
+        else:
+            x1 = loc[0]
+            y1 = loc[1]
+        return img.crop((x1, y1, x1 + tw, y1 + th)), (x1, y1)
+
+
 class RandomHorizontalFlip(object):
     """Horizontally flip the given PIL.Image randomly with a probability of 0.5."""
 
@@ -325,6 +370,25 @@ class RandomHorizontalFlip(object):
         if random.random() < 0.5:
             return img.transpose(Image.FLIP_LEFT_RIGHT)
         return img
+
+
+class RandomHorizontalFlipZ(object):
+    """Horizontally flip the given PIL.Image randomly with a probability of 0.5."""
+
+    def __call__(self, img, flip = None):
+        """
+        Args:
+            img (PIL.Image): Image to be flipped.
+
+        Returns:
+            PIL.Image: Randomly flipped image.
+        """
+        if flip is None:
+            if random.random() < 0.5:
+                return img.transpose(Image.FLIP_LEFT_RIGHT), True
+        elif flip == True:
+            return img.transpose(Image.FLIP_LEFT_RIGHT), True
+        return img, False
 
 
 class RandomSizedCrop(object):
