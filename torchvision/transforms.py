@@ -342,9 +342,9 @@ class RandomCropZ(object):
         if self.padding > 0:
             img = ImageOps.expand(img, border=self.padding, fill=0)
 
+        th, tw = self.size
         if loc is None:
             w, h = img.size
-            th, tw = self.size
             if w == tw and h == th:
                 return img
 
