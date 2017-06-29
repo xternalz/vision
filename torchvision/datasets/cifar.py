@@ -3,6 +3,7 @@ from PIL import Image
 import os
 import os.path
 import errno
+from itertools import izip
 import numpy as np
 import sys
 if sys.version_info[0] == 2:
